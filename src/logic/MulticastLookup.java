@@ -25,6 +25,7 @@ public class MulticastLookup implements IConnections {
     @Override
     public List<String> connection() {
         List<String> cons = new ArrayList<>();
+        
         try {
             // Open a random port to send the package
             c = new DatagramSocket();
