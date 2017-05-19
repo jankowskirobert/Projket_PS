@@ -1,3 +1,4 @@
+package logic;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -5,14 +6,14 @@ import java.net.InetAddress;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class MulticastDiscover implements Runnable {
+public class MulticastServer implements Runnable {
 
 	DatagramSocket socket;
 
 	@Override
 	public void run() {
 		try {
-			socket = new DatagramSocket(7, InetAddress.getByName("0.0.0.0"));
+			socket = new DatagramSocket(8888, InetAddress.getByName("0.0.0.0"));
 			socket.setBroadcast(true);
 
 			while (true) {
@@ -35,11 +36,11 @@ public class MulticastDiscover implements Runnable {
 				}
 			}
 		} catch (IOException ex) {
-			Logger.getLogger(MulticastDiscover.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(MulticastServer.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 	public static void main(String[] args) {
-		MulticastDiscover dis = new MulticastDiscover();
+		MulticastServer dis = new MulticastServer();
 		new Thread(dis).start();
 	}
 
