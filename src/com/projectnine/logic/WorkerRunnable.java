@@ -2,10 +2,12 @@ package com.projectnine.logic;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -26,18 +28,21 @@ public class WorkerRunnable implements Runnable {
             InputStream input  = clientSocket.getInputStream();
             OutputStream output = clientSocket.getOutputStream();
             long time = System.currentTimeMillis();
-//            System.out.println(convertStreamToString(input));
-            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-
-            int nRead;
-            byte[] data = new byte[16384];
-
-            while ((nRead = input.read(data, 0, data.length)) != -1) {
-              buffer.write(data, 0, nRead);
-              System.out.println("Data: "+ nRead + " " + clientSocket.hashCode());
-            }
-            buffer.flush();
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(clientSocket.getInputStream()));
             
+            byte[] buffer = new byte[65530];
+            int read;
+            System.out.println("DUPA:");
+            String tmp = "";
+            while((read = input.read(buffer)) != -1) {
+            	tmp = convertStreamToString(input);
+            };
+            System.out.println("LEN:"+(tmp.length()*0.001));
+            reader.close();
+
+            
+                        
             output.close();
             input.close();
             c.decrementAndGet();
