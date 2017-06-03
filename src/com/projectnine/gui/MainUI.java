@@ -9,17 +9,19 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import com.projectnine.logic.IServerService;
+import com.projectnine.logic.ITransferActualizer;
 import com.projectnine.logic.ServerService;
 
 public class MainUI extends JFrame  {
 
 	private final JPanel setPort;
 	private final Dimension MIN_WIN_SIZE = new Dimension(600, 400);
-	private JPanel transferView = new TransferView();
+	private TransferView transferView = new TransferView();
 	
 	public MainUI(IServerService service) throws HeadlessException {
 		super();
 		setPort = new ServerSetUpPane(service);
+		
 		initUI();
 	}
 
@@ -32,6 +34,10 @@ public class MainUI extends JFrame  {
 		this.setPreferredSize(MIN_WIN_SIZE);
 		this.pack();
 		this.setVisible(true);
+	}
+	
+	public ITransferActualizer getTransferActualizer() {
+		return transferView;
 	}
 	
 //	public static void main(String[] args) {

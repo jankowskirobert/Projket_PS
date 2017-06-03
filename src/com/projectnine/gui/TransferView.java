@@ -9,7 +9,9 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.text.Caret;
 
-public class TransferView extends JPanel {
+import com.projectnine.logic.ITransferActualizer;
+
+public class TransferView extends JPanel implements ITransferActualizer {
 
 	private static final Dimension LABEL_MIN_SIZE = new Dimension(100, 30);
 	private final JLabel singleDataSizeLabel = new JLabel("Singel data size:");
@@ -25,6 +27,11 @@ public class TransferView extends JPanel {
 		singleDataSizeField.setMinimumSize(LABEL_MIN_SIZE);
 		singleDataSizeField.setPreferredSize(LABEL_MIN_SIZE);
 		singleDataSizeField.setHorizontalAlignment(SwingConstants.RIGHT);
+	}
+
+	@Override
+	public void setSinglePackageSize(int size) {
+		this.singleDataSizeField.setText(String.valueOf(size));
 	}
 	
 }

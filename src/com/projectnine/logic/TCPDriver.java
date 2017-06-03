@@ -8,7 +8,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class TCPDriver implements Runnable {
+public class TCPDriver implements Runnable, TransferActualizationSubject {
 
 	protected int serverPort = 6660;
 	protected ServerSocket serverSocket = null;
@@ -18,7 +18,9 @@ public class TCPDriver implements Runnable {
 	private final AtomicInteger c = new AtomicInteger(0);
 	ExecutorService executor = Executors.newFixedThreadPool(1);
 	final ReentrantLock rl = new ReentrantLock();
-
+	
+	private ITransferActualizer actualizer;
+	
 	public TCPDriver(int port) {
 		this.serverPort = port;
 	}
@@ -45,7 +47,7 @@ public class TCPDriver implements Runnable {
 			} finally {
 				rl.unlock();
 			}
-			Runnable r = new WorkerRunnable(clientSocket, "Multithreaded Server", c);
+			Runnable r = new WorkerRunnable(clientSocket, "Multithreaded Server", actualizer);
 			executor.execute(r);
 		}
 		System.out.println("Server Stopped.");
@@ -71,5 +73,11 @@ public class TCPDriver implements Runnable {
 		} catch (IOException e) {
 			throw new RuntimeException("Cannot open port 8080", e);
 		}
+	}
+
+	@Override
+	public void setActualizer(ITransferActualizer actualizer) {
+		this.actualizer = actualizer;
+		
 	}
 }

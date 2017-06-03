@@ -6,5 +6,6 @@ public class ServerApplication {
 	public static void main(String[] args) {
 		ServerService serverService = new ServerService();
 		MainUI gui = new MainUI(serverService);
+		serverService.setActualizer(gui.getTransferActualizer());
 	}
 }
