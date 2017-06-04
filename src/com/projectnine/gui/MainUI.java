@@ -9,7 +9,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import com.projectnine.logic.IServerService;
-import com.projectnine.logic.ITransferActualizer;
+import com.projectnine.logic.ITCPTransferActualizer;
 import com.projectnine.logic.ServerService;
 
 public class MainUI extends JFrame  {
@@ -20,8 +20,7 @@ public class MainUI extends JFrame  {
 	
 	public MainUI(IServerService service) throws HeadlessException {
 		super();
-		setPort = new ServerSetUpPane(service);
-		
+		setPort = new ServerSetUpPane(service);	
 		initUI();
 	}
 
@@ -36,7 +35,7 @@ public class MainUI extends JFrame  {
 		this.setVisible(true);
 	}
 	
-	public ITransferActualizer getTransferActualizer() {
+	public ITCPTransferActualizer getTransferActualizer() {
 		return transferView;
 	}
 	

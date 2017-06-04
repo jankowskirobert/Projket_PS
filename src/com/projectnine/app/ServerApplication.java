@@ -1,3 +1,4 @@
+package com.projectnine.app;
 import com.projectnine.gui.MainUI;
 import com.projectnine.logic.ServerService;
 import com.projectnine.logic.ServerServiceStatus;

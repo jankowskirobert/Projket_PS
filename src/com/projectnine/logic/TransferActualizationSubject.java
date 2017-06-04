@@ -1,5 +1,5 @@
 package com.projectnine.logic;
 
 public interface TransferActualizationSubject {
-	public void setActualizer(ITransferActualizer actualizer);
+	public void setActualizer(ITCPTransferActualizer actualizer);
 }

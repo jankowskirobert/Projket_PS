@@ -3,7 +3,7 @@ package com.projectnine.logic;
 public class ServerService implements IServerService {
 
 	private ServerServiceStatus status = ServerServiceStatus.NONE;
-	private ITransferActualizer actualizer;
+	private ITCPTransferActualizer actualizer;
 	
 	@Override
 	public ServerServiceStatus startServer(int arg) {
@@ -27,7 +27,7 @@ public class ServerService implements IServerService {
 	}
 
 	@Override
-	public void setActualizer(ITransferActualizer actualizer) {
+	public void setActualizer(ITCPTransferActualizer actualizer) {
 		this.actualizer = actualizer;
 	}
 
