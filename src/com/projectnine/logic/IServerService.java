@@ -1,6 +1,6 @@
 package com.projectnine.logic;
 
-public interface IServerService extends TransferActualizationSubject {
+public interface IServerService {
 	public ServerServiceStatus startServer(int i);
 	public ServerServiceStatus getStatus(); 
 }

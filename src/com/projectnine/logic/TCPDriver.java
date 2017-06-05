@@ -19,13 +19,20 @@ public class TCPDriver implements Runnable, TransferActualizationSubject {
 	ExecutorService executor = Executors.newFixedThreadPool(1);
 	final ReentrantLock rl = new ReentrantLock();
 
-	private ITCPTransferActualizer actualizer;
+	private ITransferActualizer actualizer;
 
 	public TCPDriver(int port) {
 		this.serverPort = port;
 	}
-
-	public void run() {
+    public TCPDriver() {
+        this.serverPort = 7777;
+    }    
+	
+    public void setServerPort(int serverPort) {
+        this.serverPort = serverPort;
+    }
+    
+    public void run() {
 		
 		openServerSocket();
 		while (!isStopped()) {
@@ -50,6 +57,7 @@ public class TCPDriver implements Runnable, TransferActualizationSubject {
 			Runnable r = new WorkerRunnable(clientSocket, "Multithreaded Server", actualizer);
 			executor.submit(r);
 		}
+		actualizer.updateStatus(ServerStatus.STOPPED);
 		System.out.println("Server Stopped.");
 
 	}
@@ -70,13 +78,15 @@ public class TCPDriver implements Runnable, TransferActualizationSubject {
 	private void openServerSocket() {
 		try {
 			this.serverSocket = new ServerSocket(this.serverPort);
+			actualizer.updateStatus(ServerStatus.RUNNING);
 		} catch (IOException e) {
+		    actualizer.updateStatus(ServerStatus.FAILED);
 			throw new RuntimeException("Cannot open port 8080", e);
 		}
 	}
 
 	@Override
-	public void setActualizer(ITCPTransferActualizer actualizer) {
+	public void setActualizer(ITransferActualizer actualizer) {
 		this.actualizer = actualizer;
 
 	}

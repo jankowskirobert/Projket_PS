@@ -3,21 +3,28 @@ package com.projectnine.logic;
 public class ServerService implements IServerService {
 
 	private ServerServiceStatus status = ServerServiceStatus.NONE;
-	private ITCPTransferActualizer actualizer;
+	private ITransferActualizer actualizerTCP;
+	private final TCPDriver driverTCP;
+	private final UDPDriver driverUDP;
 	
-	@Override
+	
+	public ServerService(TCPDriver driverTCP, UDPDriver driverUDP) {
+        super();
+        this.driverTCP = driverTCP;
+        this.driverUDP = driverUDP;
+    }
+
+    @Override
 	public ServerServiceStatus startServer(int arg) {
-		TCPDriver driver = new TCPDriver(6660);
-		if(actualizer != null){
-			driver.setActualizer(actualizer);
-		}
-		
+        this.driverTCP.setServerPort(arg);
+        this.driverUDP.setServerPort(arg);
 		try {
-			new Thread(driver).start();
+			new Thread(driverTCP).start();
+			new Thread(driverUDP).start();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		this.status = ServerServiceStatus.ONLY_TCP;
+		this.status = ServerServiceStatus.BOTH_TCP_UDP;
 		return status;
 	}
 
@@ -26,9 +33,5 @@ public class ServerService implements IServerService {
 		return status;
 	}
 
-	@Override
-	public void setActualizer(ITCPTransferActualizer actualizer) {
-		this.actualizer = actualizer;
-	}
 
 }
