@@ -18,7 +18,7 @@ public class TCPDriver implements Runnable, TransferActualizationSubject {
 	private final AtomicInteger c = new AtomicInteger(0);
 	ExecutorService executor = Executors.newFixedThreadPool(1);
 	final ReentrantLock rl = new ReentrantLock();
-	private long milisStart = 0;
+
 	private ITCPTransferActualizer actualizer;
 
 	public TCPDriver(int port) {
@@ -37,7 +37,6 @@ public class TCPDriver implements Runnable, TransferActualizationSubject {
 				System.out.printf("Thread %s is performing work for 2 seconds.%n", "");
 
 				rl.lock();
-				milisStart = System.currentTimeMillis();
 				clientSocket = this.serverSocket.accept();
 			} catch (IOException e) {
 				if (isStopped()) {
@@ -46,11 +45,10 @@ public class TCPDriver implements Runnable, TransferActualizationSubject {
 				}
 				throw new RuntimeException("Error accepting client connection", e);
 			} finally {
-				milisStart = 0;
 				rl.unlock();
 			}
 			Runnable r = new WorkerRunnable(clientSocket, "Multithreaded Server", actualizer);
-			executor.execute(r);
+			executor.submit(r);
 		}
 		System.out.println("Server Stopped.");
 

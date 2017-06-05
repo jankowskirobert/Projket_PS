@@ -18,37 +18,46 @@ public class WorkerRunnable implements Runnable {
 	protected String serverText = null;
 	protected final ITCPTransferActualizer c;
 	long totalPackages = 0;
-
+	long timeStart;
 	public WorkerRunnable(Socket clientSocket, String serverText, ITCPTransferActualizer act) {
 		this.clientSocket = clientSocket;
 		this.serverText = serverText;
 		this.c = act;
+
 	}
 
 	public void run() {
 		try {
 			InputStream inputStream = clientSocket.getInputStream();
-			Reader inputStreamReader = new InputStreamReader(inputStream);
-			byte[] buffer = new byte[65530];
+//			Reader inputStreamReader = new InputStreamReader(inputStream);
+			byte[] buffer = new byte[65536];
 			int read;
 			if ((read = inputStream.read(buffer)) != -1) {
 				int sizePackage = inputStream.read(buffer);
 				if (c != null)
 					c.setSinglePackageSize(sizePackage);
 			}
-			int data = inputStreamReader.read();
+			buffer = new byte[65536];
+			int data = inputStream.read(buffer);
 			totalPackages = 0;
-			while (data != -1) {
-				char theChar = (char) data;
-				data = inputStreamReader.read();
+			this.timeStart = System.currentTimeMillis();
+			while ((data = inputStream.read(buffer)) != -1) {
+//				data = inputStreamReader.read();
 				if (data > 0) {
 					totalPackages += data;
-					c.setTotalPackageSize((long) Math.round(totalPackages * 0.001));
-
+					double totalRound = Math.round(totalPackages * 0.001);
+					c.setTotalPackageSize(totalRound);
+					long secs =(System.currentTimeMillis() - this.timeStart);
+					c.setTotalTime(Math.round(secs*0.001));
+					if(System.currentTimeMillis() % 10 == 0){
+					    double speed = Math.round(totalRound / secs);
+					    System.out.println(speed);
+					    c.setSpeed(speed);
+					}
 				}
 			}
 			totalPackages = 0;
-			inputStreamReader.close();
+//			inputStreamReader.close();
 			inputStream.close();
 			// InputStreamReader input = new
 			// InputStreamReader(clientSocket.getInputStream());
