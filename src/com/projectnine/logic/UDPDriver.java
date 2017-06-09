@@ -42,7 +42,7 @@ public class UDPDriver implements Runnable, TransferActualizationSubject {
                 e.printStackTrace();
             }
             String sentence = new String(receivePacket.getData());
-            System.out.println("RECEIVED: " + new String(receivePacket.getData(), StandardCharsets.UTF_8));
+//            System.out.println("RECEIVED: " + new String(receivePacket.getData(), StandardCharsets.UTF_8));
             InetAddress IPAddress = receivePacket.getAddress();
             int port = receivePacket.getPort();
             String capitalizedSentence = sentence.toUpperCase();
