@@ -10,7 +10,7 @@ import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
 public class LoggerView extends Handler {
-	private JTextArea textArea = new JTextArea(5, 50);
+	private JTextArea textArea = new JTextArea(10, 50);
 
 	@Override
 	public void publish(LogRecord record) {
