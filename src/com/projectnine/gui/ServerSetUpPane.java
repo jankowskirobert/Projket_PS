@@ -6,6 +6,9 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.logging.Handler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -16,10 +19,12 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import com.projectnine.logic.IServerService;
+import com.projectnine.logic.MyFormatter;
 import com.projectnine.logic.ServerService;
 import com.projectnine.logic.ServerServiceStatus;
 
 public class ServerSetUpPane extends JPanel implements ActionListener {
+	private final static Logger logger =  Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
 	private final JButton runService = new JButton("Start server");
 	private final JTextField portField = new JTextField();
@@ -35,6 +40,7 @@ public class ServerSetUpPane extends JPanel implements ActionListener {
 	}
 
 	private void initUI() {
+
 		this.setLayout(new FlowLayout(FlowLayout.LEFT));
 		this.setMinimumSize(MIN_PANE_SIZE);
 		this.setSize(MIN_PANE_SIZE);
@@ -62,9 +68,11 @@ public class ServerSetUpPane extends JPanel implements ActionListener {
 			} catch (NumberFormatException ex) {
 				JOptionPane.showMessageDialog(this.getParent(), "Could not parse server port! \n" + portField.getText(),
 						"Error", JOptionPane.ERROR_MESSAGE);
+				logger.severe("Could not parse server port! " + portField.getText());
 			} catch (NullPointerException e2) {
 				JOptionPane.showMessageDialog(this.getParent(), "Internal application error!", "Error",
 						JOptionPane.ERROR_MESSAGE);
+				logger.severe("Internal application error!" + e2.getMessage());
 			}
 
 		}

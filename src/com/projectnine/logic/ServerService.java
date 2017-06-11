@@ -1,7 +1,9 @@
 package com.projectnine.logic;
 
-public class ServerService implements IServerService {
+import java.util.logging.Logger;
 
+public class ServerService implements IServerService {
+	private final static Logger logger =  Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	private ServerServiceStatus status = ServerServiceStatus.NONE;
 	private ITransferActualizer actualizerTCP;
 	private final TCPDriver driverTCP;

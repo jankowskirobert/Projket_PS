@@ -13,9 +13,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+
+import com.projectnine.gui.LoggerView;
 
 public class TCPDriver implements Runnable, TransferActualizationSubject {
-
+	private final static Logger logger =  Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
     protected int serverPort = 6660;
     protected ServerSocket serverSocket = null;
     protected boolean isStopped = false;
@@ -31,10 +35,13 @@ public class TCPDriver implements Runnable, TransferActualizationSubject {
 
     public TCPDriver(int port) {
         this.serverPort = port;
+
+		
     }
 
     public TCPDriver() {
         this.serverPort = 7777;
+		
     }
 
     public void setServerPort(int serverPort) {
@@ -49,6 +56,7 @@ public class TCPDriver implements Runnable, TransferActualizationSubject {
                 Socket socket = serverSocket.accept();
                 serverSocket.close();
                 System.out.println("Connection accepted: " + socket);
+                logger.info("Connection accepted: " + socket);
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
                 PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())),
@@ -85,11 +93,12 @@ public class TCPDriver implements Runnable, TransferActualizationSubject {
                     totalPackages = 0;
                     inputStream.close();
                 }
+                logger.info("Client Disconnected!: " + socket);
                 openServerSocket();
             }
 
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+        	logger.severe(e.getMessage());
             e.printStackTrace();
         }
 
@@ -107,6 +116,7 @@ public class TCPDriver implements Runnable, TransferActualizationSubject {
         try {
             this.serverSocket.close();
         } catch (IOException e) {
+        	logger.severe(e.getMessage());
             throw new RuntimeException("Error closing server", e);
         }
     }
