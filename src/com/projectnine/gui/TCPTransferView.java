@@ -20,7 +20,7 @@ import observer.Listener;
 
 public class TCPTransferView extends JPanel implements ITransferActualizer {
 
-	private static final Dimension LABEL_MIN_SIZE = new Dimension(100, 20);
+	private static final Dimension LABEL_MIN_SIZE = new Dimension(130, 20);
 	
 	private final JLabel singleDataSizeLabel = new JLabel("Singel data size[bytes]:");
 	private final JTextField singleDataSizeField = new JTextField("0");
@@ -115,5 +115,13 @@ public class TCPTransferView extends JPanel implements ITransferActualizer {
         this.serverStatus.setText(status.name());
         
     }
+
+	@Override
+	public void resetView() {
+		 this.singleDataSizeField.setText("");
+		 this.totalDataSizeField.setText("");
+		 this.totalTimeField.setText("");
+		 this.speedField.setText("");
+	}
 
 }

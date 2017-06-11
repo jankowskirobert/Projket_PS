@@ -38,44 +38,52 @@ public class UDPDriver implements Runnable, TransferActualizationSubject {
 //    	byte[] receiveData = new byte[65350];
         logger.info("UDP Listening");
         int oldSingle = 0;
+        int totalPackages = 0;
+        long totalTime = System.currentTimeMillis();
         while (true) {
         	
         	byte[] receiveData = new byte[65350];
             DatagramPacket receivePacket = null;
             String str = null;
+//            System.out.println("T1");
             try {
             	receivePacket = new DatagramPacket(receiveData, receiveData.length);
             	
                 serverSocket.receive(receivePacket);
+
                 str = new String(receiveData, "UTF-8");
-                System.out.println(str);
+//                System.out.println(str);
                 receiveData = new byte[receivePacket.getLength()];
             } catch (IOException e) {
                 e.printStackTrace();
             }
             
-            if(str.contains("SIZE")){
-            	String[] arry = str.split(":");
-            	arry[1] = arry[1].replaceAll("\\D+","");
-            	logger.info("UDP: New Client, package size:" + arry[1]);
-            	System.out.println("UDP: New Client, package size:" + arry[1]);
-            	oldSingle = Integer.parseInt(arry[1]);
-            	actualizer.setSinglePackageSize(oldSingle);
-            }
-//            if(str.contains("FINE") || receivePacket.getLength() == 10){
-//            	logger.info("UDP: Client Disconnected");
-//            	System.out.println("UDP: Client Disconnected");
-////            	actualizer.setSinglePackageSize(Integer.parseInt(arry[1]));
+//            if(str.contains("SIZE")){
+//            	String[] arry = str.split(":");
+//            	arry[1] = arry[1].replaceAll("\\D+","");
+//            	logger.info("UDP: New Client, package size:" + arry[1]);
+//            	System.out.println("UDP: New Client, package size:" + arry[1]);
+//            	oldSingle = Integer.parseInt(arry[1]);
+//            	actualizer.setSinglePackageSize(oldSingle);
 //            }
             if(oldSingle != receivePacket.getLength()){
             	oldSingle = receivePacket.getLength();
             	actualizer.setSinglePackageSize(oldSingle);
             }
-            String sentence = new String(receivePacket.getData(), StandardCharsets.UTF_8);
-            System.out.println("RECEIVED: " + /*new String(receivePacket.getData(), StandardCharsets.UTF_8) +*/ + receivePacket.getLength());
-            InetAddress IPAddress = receivePacket.getAddress();
-            int port = receivePacket.getPort();
-            String capitalizedSentence = sentence.toUpperCase();
+            totalPackages += receivePacket.getLength();
+//            double totalRound = Math.round(totalPackages * 0.001);
+//            long secs = (System.currentTimeMillis() - totalTime);
+//            actualizer.setTotalTime(Math.round(secs * 0.001));
+//            if (System.currentTimeMillis() % 10 == 0) {
+//                double speed = totalRound / secs;
+//                actualizer.setSpeed((double) Math.round(speed * 100000d) / 100000d);
+//            }
+            actualizer.setTotalPackageSize(totalPackages*0.001);
+//            String sentence = new String(receivePacket.getData(), StandardCharsets.UTF_8);
+//            System.out.println("RECEIVED: " + /*new String(receivePacket.getData(), StandardCharsets.UTF_8) +*/ + receivePacket.getLength());
+//            InetAddress IPAddress = receivePacket.getAddress();
+//            int port = receivePacket.getPort();
+//            String capitalizedSentence = sentence.toUpperCase();
 //            serverSocket.se
 //
 //            try {
@@ -83,7 +91,9 @@ public class UDPDriver implements Runnable, TransferActualizationSubject {
 //            } catch (IOException e) {
 //                e.printStackTrace();
 //            }
+//            actualizer.resetView();
         }
+        
 
     }
 

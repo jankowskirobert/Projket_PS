@@ -6,4 +6,5 @@ public interface ITransferActualizer {
 	public void setTotalTime(double seconds);
 	public void setSpeed(double seconds);
 	public void updateStatus(ServerStatus status);
+	public void resetView();
 }
