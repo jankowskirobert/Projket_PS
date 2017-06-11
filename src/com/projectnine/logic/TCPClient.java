@@ -6,10 +6,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Observable;
 
-public class TCPClient implements Runnable, IServerStopper {
+public class TCPClient extends Observable implements Runnable, IServerStopper {
 
 	private final InetAddress address;
 	private final int port;
@@ -61,7 +63,8 @@ public class TCPClient implements Runnable, IServerStopper {
 			clientSocket.close();
 			
 		} catch (IOException  | InterruptedException e) {
-			// TODO Auto-generated catch block
+//			setChanged();
+//			notifyObservers(e);
 			e.printStackTrace();
 		}
 	}

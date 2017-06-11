@@ -121,12 +121,15 @@ public class MainUI extends JFrame implements ActionListener {
 					int dataSize = Integer.parseInt(packageSize.getText());
 					serverAction.startService(addr, port, dataSize);
 					serverRunning = true;
+					transferButton.setText("Stop");
 				} catch (NumberFormatException | IOException err) {
 					JOptionPane.showMessageDialog(this, err.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+					serverRunning = false;
 				}
-			else{
+			else {
 				serverAction.shouldStop();
 				serverRunning = false;
+				transferButton.setText("Start");
 			}
 		}
 	}

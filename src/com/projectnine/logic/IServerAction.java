@@ -1,5 +1,6 @@
 package com.projectnine.logic;
 
+import java.net.ConnectException;
 import java.net.InetAddress;
 
 public interface IServerAction extends IServerStopper{
