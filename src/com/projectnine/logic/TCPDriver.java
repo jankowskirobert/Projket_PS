@@ -14,6 +14,7 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
@@ -100,7 +101,7 @@ public class TCPDriver implements Runnable, TransferActualizationSubject {
 							actualizer.setTotalPackageSize(f.parse(f.format(totalPackages * 0.001)).doubleValue());
 							long estimatedTime = System.currentTimeMillis() - timeStart;
 
-							actualizer.setTotalTime(f.parse(f.format(estimatedTime * 0.001)).doubleValue());
+							actualizer.setTotalTime(f.parse(f.format(TimeUnit.MILLISECONDS.toSeconds(estimatedTime))).longValue());
 
 							actualizer.setSpeed(
 									f.parse(f.format((totalPackages * 0.001) / (estimatedTime * 0.001))).doubleValue());
@@ -141,6 +142,7 @@ public class TCPDriver implements Runnable, TransferActualizationSubject {
 	private void openServerSocket() {
 		try {
 			this.serverSocket = new ServerSocket(this.serverPort);
+			logger.info("TCP Started");
 			actualizer.updateStatus(ServerStatus.RUNNING);
 		} catch (IOException e) {
 			actualizer.updateStatus(ServerStatus.FAILED);

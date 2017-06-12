@@ -31,7 +31,7 @@ public class TCPTransferView extends JPanel implements ITransferActualizer {
 	private final JLabel totalTimeLabel = new JLabel("Total transmission time[s]:");
 	private final JTextField totalTimeField = new JTextField("0");
 	
-	private final JLabel speedLabel = new JLabel("Transmission speed[MBytes/s]:");
+	private final JLabel speedLabel = new JLabel("Transmission speed[KB/s]:");
 	private final JTextField speedField	 = new JTextField("0");
 	
 	private final JLabel serverStatusLabel = new JLabel("Status: ");

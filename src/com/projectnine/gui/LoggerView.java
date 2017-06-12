@@ -11,7 +11,10 @@ import javax.swing.SwingUtilities;
 
 public class LoggerView extends Handler {
 	private JTextArea textArea = new JTextArea(10, 50);
-
+    public LoggerView() {
+        super();
+        this.textArea.setEditable(false);
+    }
 	@Override
 	public void publish(LogRecord record) {
 		SwingUtilities.invokeLater(new Runnable() {
