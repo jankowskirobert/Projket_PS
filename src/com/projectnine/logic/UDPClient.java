@@ -6,15 +6,44 @@ import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.MulticastSocket;
 import java.net.SocketException;
+import java.util.Observable;
+import java.util.logging.Logger;
 
-public class UDPClient implements Runnable, IServerStopper {
-	private final InetAddress ipAddress;
-	private final int port;
+public class UDPClient extends Observable implements Runnable, IServerStopper {
+	private InetAddress ipAddress;
+	private int port;
 	private int byteSize = 0;
 	private boolean flag;
+	private final static Logger logger =  Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+	
+	
+    public InetAddress getIpAddress() {
+        return ipAddress;
+    }
 
-	public UDPClient(InetAddress ipAddress, int port) {
+    
+    public void setIpAddress(InetAddress ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+
+    
+    public int getPort() {
+        return port;
+    }
+
+    
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public UDPClient() {
+        super();
+    }
+
+    public UDPClient(InetAddress ipAddress, int port) {
 		super();
 		this.ipAddress = ipAddress;
 		this.port = port;
@@ -39,6 +68,17 @@ public class UDPClient implements Runnable, IServerStopper {
 
 	}
 
+	private byte[] prepareMatrix(){
+	    byte b = 7;
+        byte[] arr = new byte[byteSize];
+
+        for (int i = 0; i < byteSize; i++) {
+            arr[i] = b;
+        }
+
+	    return arr;
+	}
+	
 	public int getByteSize() {
 		return byteSize;
 	}
@@ -50,18 +90,21 @@ public class UDPClient implements Runnable, IServerStopper {
 	@Override
 	public void run() {
 		this.flag = false;
-		BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
 		DatagramSocket clientSocket;
+		logger.info("UDP Client Started");
 		try {
 			clientSocket = new DatagramSocket();
 			byte[] sendData = new byte[1024];
 			String sentence = convertByteToString();
+			clientSocket.setSendBufferSize(byteSize);
 			sendData = sentence.getBytes();
 			String initialData= "SIZE:"+byteSize;
 			DatagramPacket sendPacketInitial = new DatagramPacket(initialData.getBytes(), initialData.getBytes().length, ipAddress, port);
+			logger.info("UDP Client Send Initial Package: "+initialData);
 			clientSocket.send(sendPacketInitial);
+			byte[] dataToSend = prepareMatrix(); 
 			while(!flag){
-				DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAddress, port);
+				DatagramPacket sendPacket = new DatagramPacket(dataToSend, dataToSend.length, ipAddress, port);
 				clientSocket.send(sendPacket);
 			}
 			String endData= "FINE";
@@ -70,6 +113,8 @@ public class UDPClient implements Runnable, IServerStopper {
 			clientSocket.close();
 			
 		} catch (IOException e) {
+		    setChanged();
+		    notifyObservers(e);
 			e.printStackTrace();
 		}
 	}

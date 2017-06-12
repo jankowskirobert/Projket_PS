@@ -5,32 +5,63 @@ import java.net.InetAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class 
-ConnectionService implements IServerAction {
+public class ConnectionService implements IServerAction {
 
-	private TCPClient tcp ;
-	private UDPClient udp ;
-	ExecutorService executorServiceTcp = Executors.newFixedThreadPool(2);
-	
-	@Override
-	public void startService(InetAddress address, int port, int dataSize){
-		if(tcp == null)
-			tcp = new TCPClient(address, port, dataSize);
-		tcp.setByteSize(dataSize);
-		executorServiceTcp.execute(tcp);
-		if(udp == null)
-			udp= new UDPClient(address, port, dataSize);
-		udp.setByteSize(dataSize);
-		executorServiceTcp.execute(udp);
-	}
+    private TCPClient tcp = new TCPClient();
+    private UDPClient udp = new UDPClient();;
+    // ExecutorService executorServiceTcp = Executors.newFixedThreadPool(2);
 
-	@Override
-	public boolean shouldStop() {
-//		tcp.interrupt();//stop();
-//		tcp.stop();
-tcp.shouldStop();
-udp.shouldStop();
-return false;
-	}
+    @Override
+    public void startService(InetAddress address, int port, int dataSize) {
+
+        tcp.setAddress(address);
+        tcp.setPort(port);
+        tcp.setByteSize(dataSize);
+        udp.setIpAddress(address);
+        udp.setPort(port);
+        udp.setByteSize(dataSize);
+
+        try {
+
+            new Thread(tcp).start();
+
+            new Thread(udp).start();
+        } catch (IllegalThreadStateException e) {
+
+        }
+
+    }
+
+    public TCPClient getTcp() {
+        return tcp;
+    }
+
+    public void setTcp(TCPClient tcp) {
+        this.tcp = tcp;
+    }
+
+    public UDPClient getUdp() {
+        return udp;
+    }
+
+    public void setUdp(UDPClient udp) {
+        this.udp = udp;
+    }
+
+    public ConnectionService() {
+        super();
+    }
+
+    @Override
+    public boolean shouldStop() {
+        tcp.shouldStop();
+        udp.shouldStop();
+        return false;
+    }
+
+    @Override
+    public void nagleAlorithm(boolean flag) {
+        tcp.setNagleFlag(flag);
+    }
 
 }
