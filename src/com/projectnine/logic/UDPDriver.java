@@ -8,14 +8,25 @@ import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.util.Observable;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-public class UDPDriver implements Runnable, TransferActualizationSubject {
+public class UDPDriver extends Observable implements Runnable, TransferActualizationSubject {
 
     private final static Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
     private ITransferActualizer actualizer;
     private int serverPort;
+    private boolean serverWorks = false;
+    
+    public boolean isServerWorks() {
+        return serverWorks;
+    }
+
+    
+    public void setServerWorks(boolean serverWorks) {
+        this.serverWorks = serverWorks;
+    }
 
     public UDPDriver(int arg) {
         this.serverPort = arg;
@@ -33,12 +44,16 @@ public class UDPDriver implements Runnable, TransferActualizationSubject {
 
     @Override
     public void run() {
+        actualizer.updateStatus(ServerStatus.RUNNING);
+        serverWorks = false;
         DatagramSocket serverSocket = null;
         try {
             serverSocket = new DatagramSocket(serverPort);
             logger.info("UDP Started");
         } catch (SocketException e) {
             e.printStackTrace();
+            setChanged();
+            notifyObservers(e);
         }
 
         // byte[] receiveData = new byte[65350];
@@ -48,21 +63,22 @@ public class UDPDriver implements Runnable, TransferActualizationSubject {
         long totalTime = System.currentTimeMillis();
         DecimalFormat f = new DecimalFormat("##.00");
         timeStart = System.currentTimeMillis();
-        while (true) {
-
+        while (!serverWorks) {
+            
             byte[] receiveData = new byte[65350];
             DatagramPacket receivePacket = null;
             String str = null;
-            // System.out.println("T1");
+
             try {
                 receivePacket = new DatagramPacket(receiveData, receiveData.length);
                 
                 serverSocket.receive(receivePacket);
                 
                 str = new String(receiveData, "UTF-8");
-                // System.out.println(str);
+
                 receiveData = new byte[receivePacket.getLength()];
             } catch (IOException e) {
+                actualizer.updateStatus(ServerStatus.FAILED);
                 e.printStackTrace();
             }
 
@@ -90,33 +106,14 @@ public class UDPDriver implements Runnable, TransferActualizationSubject {
 
                 actualizer.setSpeed(f.parse(f.format((totalPackages * 0.001) / (estimatedTime * 0.001))).doubleValue());
             } catch (ParseException e) {
-                // TODO Auto-generated catch block
+                actualizer.updateStatus(ServerStatus.FAILED);
                 e.printStackTrace();
             }
-            // double totalRound = Math.round(totalPackages * 0.001);
-            // long secs = (System.currentTimeMillis() - totalTime);
-            // actualizer.setTotalTime(Math.round(secs * 0.001));
-            // if (System.currentTimeMillis() % 10 == 0) {
-            // double speed = totalRound / secs;
-            // actualizer.setSpeed((double) Math.round(speed * 100000d) / 100000d);
-            // }
-            actualizer.setTotalPackageSize(totalPackages * 0.001);
-            // String sentence = new String(receivePacket.getData(), StandardCharsets.UTF_8);
-            // System.out.println("RECEIVED: " + /*new String(receivePacket.getData(), StandardCharsets.UTF_8) +*/ +
-            // receivePacket.getLength());
-            // InetAddress IPAddress = receivePacket.getAddress();
-            // int port = receivePacket.getPort();
-            // String capitalizedSentence = sentence.toUpperCase();
-            // serverSocket.se
-            //
-            // try {
-            //// serverSocket.send(sendPacket);
-            // } catch (IOException e) {
-            // e.printStackTrace();
-            // }
-            // actualizer.resetView();
-        }
 
+//            actualizer.setTotalPackageSize(totalPackages * 0.001);
+
+        }
+        actualizer.updateStatus(ServerStatus.STOPPED);
     }
 
     private boolean byteArrayCheck12(final byte[] array) {

@@ -1,8 +1,10 @@
 package com.projectnine.logic;
 
+import java.util.Observable;
+import java.util.Observer;
 import java.util.logging.Logger;
 
-public class ServerService implements IServerService {
+public class ServerService implements IServerService, Observer {
 	private final static Logger logger =  Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	private ServerServiceStatus status = ServerServiceStatus.NONE;
 	private ITransferActualizer actualizerTCP;
@@ -35,5 +37,21 @@ public class ServerService implements IServerService {
 		return status;
 	}
 
+    @Override
+    public boolean shouldStop() {
+        driverTCP.setServerWorks(false);
+        driverUDP.setServerWorks(false);
+        return false;
+    }
 
+    @Override
+    public void update(Observable o, Object arg) {
+        // TODO Auto-generated method stub
+        
+    }
+	
+	
+
+	
+	
 }

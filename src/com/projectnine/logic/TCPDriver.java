@@ -12,6 +12,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.util.Observable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -22,7 +23,7 @@ import java.util.logging.SimpleFormatter;
 
 import com.projectnine.gui.LoggerView;
 
-public class TCPDriver implements Runnable, TransferActualizationSubject {
+public class TCPDriver extends Observable implements Runnable, TransferActualizationSubject {
 	private final static Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	protected int serverPort = 6660;
 	protected ServerSocket serverSocket = null;
@@ -32,8 +33,18 @@ public class TCPDriver implements Runnable, TransferActualizationSubject {
 	private final AtomicInteger c = new AtomicInteger(0);
 	ExecutorService executor = Executors.newFixedThreadPool(1);
 	final ReentrantLock rl = new ReentrantLock();
+	private boolean serverWorks = false;
+	
+    public boolean isServerWorks() {
+        return serverWorks;
+    }
 
-	private ITransferActualizer actualizer;
+    
+    public void setServerWorks(boolean serverWorks) {
+        this.serverWorks = serverWorks;
+    }
+
+    private ITransferActualizer actualizer;
 	private int totalPackages;
 	private long timeStart;
 
@@ -54,10 +65,10 @@ public class TCPDriver implements Runnable, TransferActualizationSubject {
 	DecimalFormat f = new DecimalFormat("##.00");
 	int oldSingle = 0;
 	public void run() {
-
+	    serverWorks = false;
 		openServerSocket();
 		try {
-			while (true) {
+			while (!serverWorks) {
 				Socket socket = serverSocket.accept();
 				serverSocket.close();
 				System.out.println("Connection accepted: " + socket);
@@ -146,6 +157,8 @@ public class TCPDriver implements Runnable, TransferActualizationSubject {
 			actualizer.updateStatus(ServerStatus.RUNNING);
 		} catch (IOException e) {
 			actualizer.updateStatus(ServerStatus.FAILED);
+			setChanged();
+            notifyObservers(e);
 			throw new RuntimeException("Cannot open port 8080", e);
 		}
 	}
